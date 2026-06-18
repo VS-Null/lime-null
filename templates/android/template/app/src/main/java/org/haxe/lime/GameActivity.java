@@ -56,6 +56,7 @@ public class GameActivity extends SDLActivity {
 	private static HaxeObject deviceOrientationListener;
 	private static int deviceOrientation = SDL_ORIENTATION_UNKNOWN;
 
+	private static final int FILE_SELECT_CODE = 1234;
 	public Handler handler;
 
 	public static void setDeviceOrientationListener (HaxeObject object) {
@@ -566,6 +567,30 @@ public class GameActivity extends SDLActivity {
     	}
 	}
 
+	public void openFilePicker() {
+	    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+	    intent.setType("*/*");
+	    intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+	    try {
+	        startActivityForResult(Intent.createChooser(intent, "Select a File"), FILE_SELECT_CODE);
+	    } catch (android.content.ActivityNotFoundException ex) {
+	        /*
+			* handle case where no file manager is available
+			*/
+	        runOnUiThread(new Runnable() {
+	            @Override
+	            public void run() {
+	                android.widget.Toast.makeText(
+	                    GameActivity.this,
+	                    "No file manager app found. Please install a file manager to select files.",
+	                    android.widget.Toast.LENGTH_LONG
+	                ).show();
+	            }
+	        });
+	        ex.printStackTrace();
+	    }
+	}
 
 	public static void openURL (String url, String target) {
 
